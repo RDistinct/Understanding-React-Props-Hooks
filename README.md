@@ -1,3 +1,23 @@
+# TABLE OF CONTENT
+
+[WHAT IS REACT](#what-is-react)
+
+[UNDERSTANDING PROPS & HOOKS](#understand-props--hooks-in-react)
+
+[PROPS](#props)
+
+- [DEFAULT PROPS](#default-props)
+
+[HOOKS](#hooks)
+
+[Before hooks](#)
+
+[WHAT IS REACT](#what-is-react)
+
+[WHAT IS REACT](#what-is-react)
+
+[WHAT IS REACT](#what-is-react)
+
 # WHAT IS REACT?
 
 A JavaScript library for building user interfaces. But what is a javascript library? How does it work in the DOM?
@@ -125,8 +145,8 @@ function MyProduct({ name, description, price }) {
 
 #### DEFAULT PROPS
 
-Sometimes you want to set default values for props, for instance when we dont have props data passed in.
-We use `defaultProps` property in a component to set default values of our props. We use the component's name then `dot(.)` followed by `defaultProps`. This ensures that props are not without value. When we pass value in the component later, then these default values are overriden.
+Sometimes you want to set default values for props, for instance when we don't have props data passed in.
+We use `defaultProps` property in a component to set default values of our props. We use the component's name then `dot(.)` followed by `defaultProps`. This ensures that props are not without value. When we pass value in the component later, then these default values are overridden.
 
 ```jsx default props
 function MyProducts({ name, description, price }) {
@@ -161,7 +181,7 @@ Hooks are functions that help us use React's features (like tracking `state` in 
 
 To use hooks you `import` them from `React`
 
-### useState Hook
+### useState() Hook
 
 Because an application has state, we need a way to track this state and perform some actions once this state changes. To use `useState`, initialize it in the functional component. The `useState` returns 2 values
 
@@ -186,17 +206,50 @@ return(
 
 We are first importing useState, declaring the state we want to 'track & update' `const [color, setColor] = useState('');`, initializing the 'state' in our component `<p>Color is {color}</p>`, then we **update state** when button is clicked.
 
-### useEffect Hook
+### useEffect() Hook
 
-This hook is used to perform side effect on your component. This happens when dealing with external systems or external data eg fetching data,
+This hook is used to perform side effect on your component. This happens when dealing with external systems or external data eg fetching data.This hook runs after every render of a component.
 
-The `useEffect` takes two arguments, the first one being a function & the second an array of dependencies that tell react when to run your code eg milliseconds in a `setTimeOut` function.
+External systems refer to the systems not controlled by react but are being used by your react app. Eg network, browser APIs, or 3rd party library.
+
+In short, `useEffect()` lets you synchronize a component with external systems.
+
+The `useEffect` takes two arguments, the first one being a `setup` function that carries the Effect's logic & the second argument is an array of dependencies that tell react when to run your code eg milliseconds in a `setTimeOut` function. React runs the `setup` function once the component is added to the DOM. The `setup` function can return an optional `cleanup` function, which is ran(with old values) after every re-render with change in dependencies, and then run the setup function(with new values). The cleanup function is also run after the component is removed from the DOM.Think of the cleanup code as a way of telling react to "disconnect" from the external system.
+
+Dependencies are optional & it refers to the reactive values referenced inside the setup code. The reactive values include `props, state & variables & functions` declared inside the component.
+
+By default, the useState() returns `undefined`.
 
 ```jsx useEffect
-useEffect(() => {}, [prop, state]);
+//Eg 1
+useEffect(setupFn, arrayDependencies);
+
+//Eg 2
+useEffect(() => {setupFn(return cleanupFn(optional))}, [prop, state]);
 ```
 
-### useContext Hook
+Call the `useEffect()` hook at the top level of your component in order to declare an Effect,because this is a hook.
+
+An Example
+
+```jsx fetch with useEffect()
+import { useState, useEffect } from "react";
+const [quote, setQuote] = useState([]);
+
+useEffect(() => {
+  function getQuotes() {
+    fetch("https://api.quotable.io/random")
+      .then((response) => response.json())
+      .then((data) => setQuote(data));
+  }
+}, []);
+```
+
+The fetch takes one argument which is the path to resource URL.This returns a promise that resolves in a `Response` object. The `Response` Object is a representation of the whole http response, and we use `json()` to extract JSON body content from the response object.The `json()` returns a second promise that resolves with the result of parsing the response body text as JSON.
+
+The function `getQuotes` is the setup function that handles the effec's logic.
+
+### useContext() Hook
 
 This hook is used to manage state globally. State should be held by the highest parent component.
 
@@ -213,3 +266,59 @@ Then, wrap the children components in the `Context Provider`
 ```jsx
 <UserContext.Provider></UserContext.Provider>
 ```
+
+### useRef() Hook
+
+Before getting into useRef() lets understand some react concepts:
+
+**React elements** - these are the smallest building blocks of a react app.It describes what you want to see on the UI.An example is a header element.
+
+`const headingElem = <h1>Im a Heading</h1>`
+
+React elements are plain objects.
+
+React DOM - updates the DOM to match react elements.
+
+Virtual DOM - a lightweight copy of the DOM.
+
+How react renders elements/components - a DOM element is passed to ReactDOM, then passed to the `root.render()` function. If you have noticed, so far we have not used `document.createElement, getElementById,` & such methods in React.These are carried out by react DOM.
+On a clean webpage, the DOM is empty coz it has no elements in it. With react, we add elements and every time we update an element, react compares the previous DOM with current and applies the only changes needed.
+
+`render()` updates the virtual DOM, them react compares the virtual DOM to the actual DOM and applies the change. React transpile the JSX to actual HTML & settles the difference between virtual and real DOM.
+
+useRef() hook lets you reference a value that is not needed for rendering.
+
+#### what values are needed for rendering?
+
+Ans: props and state values
+
+When you want to store data that is
+not part of a component's state, but still needs to be accessed by other components.
+
+Refs are used to access the value of uncontrolled component such as an input field which is not managed by react but the DOM itself.
+
+Its syntax is:
+
+```jsx
+const InitialRef = useRef(Initial_Value);
+```
+
+`useRef()` returns an object with single property, `current`.A ref is a plain JavaScript object.
+The `current` value is set to the initial value you passed when declaring & initializing useRef.You can change this value later. You can mutate the `ref.current` property, which is a caveat.
+When `ref.current` changes, the component does not re-render. Remember a component rerenders once its state changes.
+
+Since changing ref doesn't cause a re-render, they are perfect for storing info that doesn't affect visual output of a component. So, in short a ref is used to persist data between renders.Therefore, useRef() has the following characteristics:
+
+- stores info between re-renders. Regular variables reset on every render.
+- doesnt trigger a re-render . State variables trigger a re-render
+- info in useRef() is local.
+
+Dont use `useRef()` on storing info you want to display on the screen. In this case, use `useState()`
+
+Also, dont read/write refs during rendering, in stead read/write refs in event handlers or effects.Ths is because react expects a component to behave like a pure function, same inputs should give same outputs.Eg of reading/writing refs during rendering:
+
+```jsx useRef()
+
+```
+
+#### DOM Manipulation with ref
