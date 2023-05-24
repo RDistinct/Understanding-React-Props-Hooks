@@ -267,9 +267,11 @@ Then, wrap the children components in the `Context Provider`
 <UserContext.Provider></UserContext.Provider>
 ```
 
-### useRef() Hook
+<hr>
 
-Before getting into useRef() lets understand some react concepts:
+### **useRef() Hook**
+
+Before getting into useRef() lets understand some react terms/concepts:
 
 **React elements** - these are the smallest building blocks of a react app.It describes what you want to see on the UI.An example is a header element.
 
@@ -277,30 +279,35 @@ Before getting into useRef() lets understand some react concepts:
 
 React elements are plain objects.
 
-React DOM - updates the DOM to match react elements.
+React DOM - package that updates the DOM to match react elements through methods like `render(),findDOMNode(),hydrate()` etc.
 
-Virtual DOM - a lightweight copy of the DOM.
+Virtual DOM - a lightweight copy of the DOM.Before changes are made to the actual DOM, they are first made in the virtual DOM.
 
 How react renders elements/components - a DOM element is passed to ReactDOM, then passed to the `root.render()` function. If you have noticed, so far we have not used `document.createElement, getElementById,` & such methods in React.These are carried out by react DOM.
 On a clean webpage, the DOM is empty coz it has no elements in it. With react, we add elements and every time we update an element, react compares the previous DOM with current and applies the only changes needed.
 
 `render()` updates the virtual DOM, them react compares the virtual DOM to the actual DOM and applies the change. React transpile the JSX to actual HTML & settles the difference between virtual and real DOM.
 
+In simple terms, When a component’s state changes, React updates the virtual DOM first and then compares it with the previous version of the virtual DOM. This process is called **reconciliation**. React then updates only the parts of the actual DOM that have changed based on the changes in the virtual DOM. This approach is much faster than updating the entire DOM every time there is a change in the state of a component.
+
 useRef() hook lets you reference a value that is not needed for rendering.
 
-#### what values are needed for rendering?
-
-Ans: props and state values
+Question: what values are needed for rendering?
+Ans: props and state values. Any time they change, a render is triggered.
 
 When you want to store data that is
 not part of a component's state, but still needs to be accessed by other components.
 
-Refs are used to access the value of uncontrolled component such as an input field which is not managed by react but the DOM itself.
+Refs are used to access the value of uncontrolled component such as an input field which is not managed by react(doesnt have state) but the DOM itself.
 
 Its syntax is:
 
 ```jsx
 const InitialRef = useRef(Initial_Value);
+//when you log InitialRef you get an object with current key and initial value
+console.log(refVal); //Object
+console.log(refVal.current); //Object property
+console.log((refVal.current = "React session")); //mutation -> not advisable
 ```
 
 `useRef()` returns an object with single property, `current`.A ref is a plain JavaScript object.
@@ -321,4 +328,52 @@ Also, dont read/write refs during rendering, in stead read/write refs in event h
 
 ```
 
+#### When To Use Refs
+
+Refs are treated as an "escape hatch" when working with external systems and browser APIs
+Refs are useful when you want to step out of react & communicate with external APIs that wont have an impact on a component.So long as a component needs to store some value that wont impact rendering logic. These include:
+
+- Storing timeout IDs
+- storing and manipulating DOM elements
+- storing objects not necessary to calculate JSX.
+
 #### DOM Manipulation with ref
+
+An example of how `useRef` is similar to `useState`
+
+```jsx useRef example
+import { useRef } from "react";
+function App() {
+  const clickRef = useRef(0);
+  console.log(clickRef);
+
+  function handleClick() {
+    clickRef.current = clickRef.current + 1;
+    console.log(clickRef.current);
+  }
+  return (
+    <>
+      {" "}
+      <button onClick={handleClick}>Click Here</button>;{" "}
+    </>
+  );
+}
+```
+
+Using Ref to focus on an input field.We are going to use the `ref` attribute.
+
+```jsx ref attribute
+import { useRef } from "react";
+const fieldRef = useRef()
+function App() {
+
+function focusInput(){
+  fieldRef.current.focus();
+}
+
+  return <>
+  <input ref={fieldRef}>
+  <button onClick={focusInput}>Click</button>
+  </>;
+}
+```
