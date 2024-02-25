@@ -173,7 +173,7 @@ export default MyProducts;
 
 Before React 16.8, react components were _class-based_. Using classes was the only way to access a component's state and its lifecycle.
 
-Now react uses functional components, and we need to access a component's state and other React functions. Enter into **HOOKS**. The same way class components were able to access state, in functional components we can now do that using hooks.
+Now react uses function components, and we need to access a component's state and other React functions. Enter into **HOOKS**. The same way class components were able to access state, in function components we can now do that using hooks.
 
 They are called _Hooks_ because they help us "hook into" React's features such as **state and lifecycle methods**
 
@@ -183,7 +183,7 @@ To use hooks you `import` them from `React`
 
 ### useState() Hook
 
-Because an application has state, we need a way to track this state and perform some actions once this state changes. To use `useState`, initialize it in the functional component. The `useState` returns 2 values
+Because an application has state, we need a way to track this state and perform some actions once this state changes. To use `useState`, initialize it in the function component. The `useState` returns 2 values
 
 Think of useState as: current state(state) >> update state(setState)
 
